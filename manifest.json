@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "Quick Notes",
+  "version": "1.0.0",
+  "description": "A simple, beautiful note-taking extension for your browser",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Quick Notes",
+    "default_popup_size": {
+      "width": 560,
+      "height": 600
+    }
+  }
+}

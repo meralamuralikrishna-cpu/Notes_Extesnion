@@ -1,33 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        *{
-            margin: 0;
-            padding: 0;
-        }
-        body{
-            background-image: linear-gradient(180deg, #f8f1e6, #eee0ca);
-            background-repeat: no-repeat;
-            background-attachment: fixed
-        }
-    </style>
-</head>
-<body>
-    <div>
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quick Notes</title>
+  <!-- Tailwind for layout speed, Lucide for icons -->
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Link your custom stylesheet -->
+  <link rel="stylesheet" href="style.css">
+ </head>
+ <body>
+  <div class="notes-app w-full px-4 py-5 sm:px-6">
+   <div class="popup-shell">
+    <!-- Header -->
+    <header class="bg-[#3d2c19] text-white rounded-[24px] px-6 py-6 shadow-sm">
+     <div class="flex items-start gap-4">
+      <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#f3bd45] text-[#3d2c19]">
+        <i data-lucide="sticky-note" width="22" height="22"></i>
+      </div>
+      <div>
+       <h1 class="font-bold text-xl leading-tight">Quick Notes</h1>
+       <p class="text-sm opacity-80 mt-1">A small place for the thoughts worth keeping.</p>
+      </div>
+     </div>
+    </header>
 
-    </div>
-    <div style="border: #eee0ca;">
-        <div>
-            <h4>Capture a thought</h4>
+    <!-- Main Workspace -->
+    <main class="mt-4" aria-label="Notes workspace">
+     <section class="bg-[#fdfbf7] border border-[#dfd5c6] rounded-[24px] p-5 shadow-sm">
+      <h2 class="font-semibold text-lg text-[#342b22]">Capture a thought</h2>
+      <form id="note-form" class="mt-4 space-y-3">
+       <div>
+        <label class="mb-1.5 block font-medium text-sm text-[#342b22]" for="note-title">Title</label> 
+        <input id="note-title" placeholder="Give your note a name" class="w-full rounded-xl border border-[#dfd5c6] bg-[#fffdf8] px-3.5 py-2.5 text-sm text-[#342b22] placeholder:text-[#a49786]" type="text" maxlength="80" required>
+        <p class="mt-1 text-xs text-[#a49786]"><span id="title-count">0</span>/80</p>
+       </div>
+       <div>
+        <label class="mb-1.5 block font-medium text-sm text-[#342b22]" for="note-content">Your note</label> 
+        <textarea id="note-content" placeholder="Write it down before it slips away..." class="w-full resize-none rounded-xl border border-[#dfd5c6] bg-[#fffdf8] px-3.5 py-2.5 text-sm text-[#342b22] placeholder:text-[#a49786]" rows="4" maxlength="800" required></textarea>
+        <p class="mt-1 text-xs text-[#a49786]"><span id="content-count">0</span>/800</p>
+       </div>
+       <div class="flex items-end gap-3">
+        <div class="min-w-0 flex-1">
+          <label class="mb-1.5 block font-medium text-sm text-[#342b22]" for="note-color">Colour</label> 
+          <select id="note-color" class="w-full rounded-xl border border-[#dfd5c6] bg-[#fffdf8] px-3 py-2.5 text-sm text-[#342b22]"> 
+            <option value="#e9a63b">Golden</option> 
+            <option value="#df7168">Coral</option> 
+            <option value="#78a990">Sage</option> 
+            <option value="#749fca">Sky</option> 
+            <option value="#af85bd">Lilac</option> 
+          </select>
         </div>
-    </div>
-    <div>
+        <button id="add-button" class="bg-[#3d2c19] text-white inline-flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold shadow-sm transition hover:-translate-y-0.5" type="submit"> 
+          <i data-lucide="plus" width="17" height="17"></i> <span>Add</span> 
+        </button>
+       </div>
+      </form>
+      <p id="status-message" class="mt-3 min-h-[20px] text-sm font-medium" aria-live="polite" role="status"></p>
+     </section>
 
+     <section class="mt-5">
+      <div class="mb-3 flex items-center justify-between px-1">
+       <h2 class="font-semibold text-base text-[#342b22]">Your notes</h2>
+       <span id="note-count" class="rounded-full bg-[#f1e8d8] px-2.5 py-1 text-xs font-semibold text-[#6e5d49]">0</span>
+      </div>
+      <div id="empty-state" class="rounded-2xl border border-dashed border-[#d9cdbb] bg-[#fdfbf7]/50 px-5 py-9 text-center text-sm text-[#8d7862]">
+        Your notes will gather here. Start with one small thought.
+      </div>
+      <div id="notes-list" class="notes-scroll space-y-3 pb-2"></div>
+     </section>
+    </main>
+
+    <footer class="pt-5 text-center">
+     <p class="text-xs text-[#8d7862]">Kept close, one note at a time.</p>
+    </footer>
+   </div>
+  </div>
+
+  <!-- Note Template -->
+  <template id="note-template">
+   <article class="note-card fade-in rounded-2xl py-4 pl-5 pr-4 shadow-sm border border-[#dfd5c6]/60">
+    <div class="flex items-start justify-between gap-3">
+     <div class="min-w-0">
+      <h3 data-role="title" class="break-words font-semibold text-[#342b22]"></h3>
+      <p data-role="content" class="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-[#524436]"></p>
+      <p data-role="date" class="mt-3 text-xs text-[#a49786]"></p>
+     </div>
+     <div class="shrink-0">
+      <button class="delete-note flex h-8 w-8 items-center justify-center rounded-lg text-[#8d7862] transition hover:bg-[#f9e4dd] hover:text-[#b6473f]" type="button" aria-label="Delete note"> 
+        <i data-lucide="trash-2" width="16" height="16"></i> 
+      </button>
+      <div class="delete-confirmation mt-1 hidden items-center gap-1">
+        <button class="confirm-delete rounded-md bg-[#b6473f] px-2 py-1 text-[10px] font-bold text-white" type="button">Delete</button> 
+        <button class="cancel-delete rounded-md bg-[#eee6dc] px-2 py-1 text-[10px] font-bold text-[#6e5d49]" type="button">Keep</button>
+      </div>
+     </div>
     </div>
-    
-</body>
+   </article>
+  </template>
+
+  <!-- Link your main logic script - FIXED: main.js (not main.jss) -->
+  <script src="main.js"></script>
+ </body>
 </html>
